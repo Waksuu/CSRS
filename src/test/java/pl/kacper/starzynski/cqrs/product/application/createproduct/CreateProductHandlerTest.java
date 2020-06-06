@@ -36,8 +36,9 @@ class CreateProductHandlerTest {
     private static final String EMAIL_WITHOUT_AT_SIGN = "randomString";
     private static final String VALID_EMAIL_WITH_MANY_SUB_DOMAINS = "email@my.random.domain.com";
     private static final String EMAIL_WITHOUT_DOMAIN = "email@";
-    private static final List<String> MANY_INVALID_FIELDS = List.of(ExceptionMessages.TOO_LONG_NAME,
+    private static final List<String> ALL_INVALID_FIELDS = List.of(ExceptionMessages.TOO_LONG_NAME,
             ExceptionMessages.PRICE_IS_NOT_POSITIVE, ExceptionMessages.INVALID_EMAIL);
+    private static final List<String> SOME_INVALID_FIELDS = List.of(ExceptionMessages.EMPTY_NAME, ExceptionMessages.INVALID_EMAIL);
 
     private static final Pipeline pipeline = createPipelinrWithCreateProductHandler();
 
@@ -95,7 +96,8 @@ class CreateProductHandlerTest {
 
     private static Stream<Arguments> createInvalidCommandsWithMultipleInvalidValues() {
         return Stream.of(
-                Arguments.of(new CreateProductCommand(INVALID_LONG_NAME, NEGATIVE_PRICE, EMAIL_WITHOUT_DOMAIN), MANY_INVALID_FIELDS, "Multiple values are invalid")
+                Arguments.of(new CreateProductCommand(INVALID_LONG_NAME, NEGATIVE_PRICE, EMAIL_WITHOUT_DOMAIN), ALL_INVALID_FIELDS, "All values are invalid"),
+                Arguments.of(new CreateProductCommand(EMPTY_NAME, VALID_PRICE, EMAIL_WITHOUT_AT_SIGN), SOME_INVALID_FIELDS, "Some of the values are invalid")
         );
     }
 
