@@ -1,9 +1,12 @@
 package pl.kacper.starzynski.cqrs.product.application.createproduct;
 
+import an.awesome.pipelinr.Pipeline;
+import an.awesome.pipelinr.Pipelinr;
 import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import pl.kacper.starzynski.cqrs.configuration.pipelinr.middleware.CommandValidation;
 import pl.kacper.starzynski.cqrs.sharedkernel.ExceptionMessages;
 import pl.kacper.starzynski.cqrs.sharedkernel.InvalidCommandException;
 import pl.kacper.starzynski.cqrs.sharedkernel.ValidationResults;
@@ -16,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class ProductCommandHandlerTest {
+class CreateProductHandlerTest {
 
     private static final String VALID_EMAIL = "email@domain.com";
     private static final BigDecimal VALID_PRICE = new BigDecimal("199.99");
@@ -36,7 +39,14 @@ class ProductCommandHandlerTest {
     private static final List<String> MANY_INVALID_FIELDS = List.of(ExceptionMessages.TOO_LONG_NAME,
             ExceptionMessages.PRICE_IS_NOT_POSITIVE, ExceptionMessages.INVALID_EMAIL);
 
-    private final ProductCommandHandler productCommandHandler = new ProductCommandHandler();
+    private static final Pipeline pipeline = createPipelinrWithCreateProductHandler();
+
+    //TODO: This probably should be test only for command validation or end to end with spring boot context
+    private static Pipelinr createPipelinrWithCreateProductHandler() {
+        return new Pipelinr()
+                .with(() -> Stream.of(new CreateProductHandler()))
+                .with(() -> Stream.of(new CommandValidation()));
+    }
 
     @ParameterizedTest(name = "#{index} - {2}")
     @MethodSource("createInvalidCommands")
@@ -65,7 +75,7 @@ class ProductCommandHandlerTest {
     @ParameterizedTest(name = "#{index} - {1}")
     @MethodSource("createValidCommands")
     void shouldNotThrowWhenCommandIsValid(CreateProductCommand command, String testCaseName) {
-        productCommandHandler.createProduct(command);
+        pipeline.send(command);
     }
 
     private static Stream<Arguments> createValidCommands() {
@@ -90,7 +100,7 @@ class ProductCommandHandlerTest {
     }
 
     private Executable createProduct(CreateProductCommand command) {
-        return () -> productCommandHandler.createProduct(command);
+        return () -> pipeline.send(command);
     }
 
     private List<String> getListOfErrors(InvalidCommandException exception) {

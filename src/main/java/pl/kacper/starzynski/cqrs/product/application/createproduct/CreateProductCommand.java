@@ -1,5 +1,6 @@
 package pl.kacper.starzynski.cqrs.product.application.createproduct;
 
+import an.awesome.pipelinr.Command;
 import lombok.Value;
 import pl.kacper.starzynski.cqrs.sharedkernel.ExceptionMessages;
 
@@ -7,7 +8,7 @@ import javax.validation.constraints.*;
 import java.math.BigDecimal;
 
 @Value
-public class CreateProductCommand {
+public class CreateProductCommand implements Command<Long> {
 
     @Size(max = 25, message = ExceptionMessages.TOO_LONG_NAME)
     @NotBlank(message = ExceptionMessages.EMPTY_NAME)
