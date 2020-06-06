@@ -4,6 +4,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import pl.kacper.starzynski.cqrs.sharedkernel.ExceptionMessages;
 import pl.kacper.starzynski.cqrs.sharedkernel.InvalidCommandException;
 
 import java.math.BigDecimal;
@@ -30,8 +31,8 @@ class ProductCommandHandlerTest {
     private static final String EMAIL_WITHOUT_AT_SIGN = "randomString";
     private static final String VALID_EMAIL_WITH_MANY_SUB_DOMAINS = "email@my.random.domain.com";
     private static final String EMAIL_WITHOUT_DOMAIN = "email@";
-    private static final String MANY_INVALID_FIELDS = Stream.of(ProductCommandHandler.TOO_LONG_NAME,
-            ProductCommandHandler.PRICE_IS_NOT_POSITIVE, ProductCommandHandler.INVALID_EMAIL)
+    private static final String MANY_INVALID_FIELDS = Stream.of(ExceptionMessages.TOO_LONG_NAME,
+            ExceptionMessages.PRICE_IS_NOT_POSITIVE, ExceptionMessages.INVALID_EMAIL)
             .collect(Collectors.joining(System.lineSeparator()));
 
     private final ProductCommandHandler productCommandHandler = new ProductCommandHandler();
@@ -45,18 +46,18 @@ class ProductCommandHandlerTest {
 
     private static Stream<Arguments> createInvalidCommands() {
         return Stream.of(
-                Arguments.of(new CreateProductCommand(VALID_NAME, NEGATIVE_PRICE, VALID_EMAIL), ProductCommandHandler.PRICE_IS_NOT_POSITIVE, "Price is negative"),
-                Arguments.of(new CreateProductCommand(VALID_NAME, NO_PRICE, VALID_EMAIL), ProductCommandHandler.EMPTY_PRICE, "Price is null"),
-                Arguments.of(new CreateProductCommand(VALID_NAME, PRICE_WITH_VALUE_ZERO, VALID_EMAIL), ProductCommandHandler.PRICE_IS_NOT_POSITIVE, "Price value is 0"),
+                Arguments.of(new CreateProductCommand(VALID_NAME, NEGATIVE_PRICE, VALID_EMAIL), ExceptionMessages.PRICE_IS_NOT_POSITIVE, "Price is negative"),
+                Arguments.of(new CreateProductCommand(VALID_NAME, NO_PRICE, VALID_EMAIL), ExceptionMessages.EMPTY_PRICE, "Price is null"),
+                Arguments.of(new CreateProductCommand(VALID_NAME, PRICE_WITH_VALUE_ZERO, VALID_EMAIL), ExceptionMessages.PRICE_IS_NOT_POSITIVE, "Price value is 0"),
 
-                Arguments.of(new CreateProductCommand(EMPTY_NAME, VALID_PRICE, VALID_EMAIL), ProductCommandHandler.EMPTY_NAME, "Name is empty"),
-                Arguments.of(new CreateProductCommand(NO_NAME, VALID_PRICE, VALID_EMAIL), ProductCommandHandler.EMPTY_NAME, "Name is null"),
-                Arguments.of(new CreateProductCommand(INVALID_LONG_NAME, VALID_PRICE, VALID_EMAIL), ProductCommandHandler.TOO_LONG_NAME, "Name is too long"),
+                Arguments.of(new CreateProductCommand(EMPTY_NAME, VALID_PRICE, VALID_EMAIL), ExceptionMessages.EMPTY_NAME, "Name is empty"),
+                Arguments.of(new CreateProductCommand(NO_NAME, VALID_PRICE, VALID_EMAIL), ExceptionMessages.EMPTY_NAME, "Name is null"),
+                Arguments.of(new CreateProductCommand(INVALID_LONG_NAME, VALID_PRICE, VALID_EMAIL), ExceptionMessages.TOO_LONG_NAME, "Name is too long"),
 
-                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMAIL_WITHOUT_AT_SIGN), ProductCommandHandler.INVALID_EMAIL, "Email does not have '@' sign"),
-                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMPTY_EMAIL), ProductCommandHandler.INVALID_EMAIL, "Email is empty"),
-                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, NO_EMAIL), ProductCommandHandler.INVALID_EMAIL, "Email is null"),
-                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMAIL_WITHOUT_DOMAIN), ProductCommandHandler.INVALID_EMAIL, "Email does not have domain"),
+                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMAIL_WITHOUT_AT_SIGN), ExceptionMessages.INVALID_EMAIL, "Email does not have '@' sign"),
+                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMPTY_EMAIL), ExceptionMessages.INVALID_EMAIL, "Email is empty"),
+                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, NO_EMAIL), ExceptionMessages.INVALID_EMAIL, "Email is null"),
+                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMAIL_WITHOUT_DOMAIN), ExceptionMessages.INVALID_EMAIL, "Email does not have domain"),
 
                 Arguments.of(new CreateProductCommand(INVALID_LONG_NAME, NEGATIVE_PRICE, EMAIL_WITHOUT_DOMAIN), MANY_INVALID_FIELDS, "Multiple values are invalid")
         );
