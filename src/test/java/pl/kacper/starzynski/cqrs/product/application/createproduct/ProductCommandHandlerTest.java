@@ -6,11 +6,13 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import pl.kacper.starzynski.cqrs.sharedkernel.ExceptionMessages;
 import pl.kacper.starzynski.cqrs.sharedkernel.InvalidCommandException;
+import pl.kacper.starzynski.cqrs.sharedkernel.ValidationResults;
 
 import java.math.BigDecimal;
-import java.util.stream.Collectors;
+import java.util.List;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -31,17 +33,16 @@ class ProductCommandHandlerTest {
     private static final String EMAIL_WITHOUT_AT_SIGN = "randomString";
     private static final String VALID_EMAIL_WITH_MANY_SUB_DOMAINS = "email@my.random.domain.com";
     private static final String EMAIL_WITHOUT_DOMAIN = "email@";
-    private static final String MANY_INVALID_FIELDS = Stream.of(ExceptionMessages.TOO_LONG_NAME,
-            ExceptionMessages.PRICE_IS_NOT_POSITIVE, ExceptionMessages.INVALID_EMAIL)
-            .collect(Collectors.joining(System.lineSeparator()));
+    private static final List<String> MANY_INVALID_FIELDS = List.of(ExceptionMessages.TOO_LONG_NAME,
+            ExceptionMessages.PRICE_IS_NOT_POSITIVE, ExceptionMessages.INVALID_EMAIL);
 
     private final ProductCommandHandler productCommandHandler = new ProductCommandHandler();
 
     @ParameterizedTest(name = "#{index} - {2}")
     @MethodSource("createInvalidCommands")
-    void shouldValidateCommandFields(CreateProductCommand command, String exceptionMessage, String testCaseName) {
+    void shouldThrowOnSingleInvalidField(CreateProductCommand command, String expectedMessage, String testCaseName) {
         InvalidCommandException exception = assertThrows(InvalidCommandException.class, createProduct(command));
-        assertEquals(exceptionMessage, exception.getMessage());
+        assertEquals(expectedMessage, exception.getMessage());
     }
 
     private static Stream<Arguments> createInvalidCommands() {
@@ -57,9 +58,7 @@ class ProductCommandHandlerTest {
                 Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMAIL_WITHOUT_AT_SIGN), ExceptionMessages.INVALID_EMAIL, "Email does not have '@' sign"),
                 Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMPTY_EMAIL), ExceptionMessages.INVALID_EMAIL, "Email is empty"),
                 Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, NO_EMAIL), ExceptionMessages.INVALID_EMAIL, "Email is null"),
-                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMAIL_WITHOUT_DOMAIN), ExceptionMessages.INVALID_EMAIL, "Email does not have domain"),
-
-                Arguments.of(new CreateProductCommand(INVALID_LONG_NAME, NEGATIVE_PRICE, EMAIL_WITHOUT_DOMAIN), MANY_INVALID_FIELDS, "Multiple values are invalid")
+                Arguments.of(new CreateProductCommand(VALID_NAME, VALID_PRICE, EMAIL_WITHOUT_DOMAIN), ExceptionMessages.INVALID_EMAIL, "Email does not have domain")
         );
     }
 
@@ -77,7 +76,24 @@ class ProductCommandHandlerTest {
         );
     }
 
+    @ParameterizedTest(name = "#{index} - {2}")
+    @MethodSource("createInvalidCommandsWithMultipleInvalidValues")
+    void shouldThrowOnMultipleInvalidFields(CreateProductCommand command, List<String> expectedMessages, String testCaseName) {
+        InvalidCommandException exception = assertThrows(InvalidCommandException.class, createProduct(command));
+        assertThat(getListOfErrors(exception)).containsExactlyInAnyOrder(expectedMessages.toArray(String[]::new));
+    }
+
+    private static Stream<Arguments> createInvalidCommandsWithMultipleInvalidValues() {
+        return Stream.of(
+                Arguments.of(new CreateProductCommand(INVALID_LONG_NAME, NEGATIVE_PRICE, EMAIL_WITHOUT_DOMAIN), MANY_INVALID_FIELDS, "Multiple values are invalid")
+        );
+    }
+
     private Executable createProduct(CreateProductCommand command) {
         return () -> productCommandHandler.createProduct(command);
+    }
+
+    private List<String> getListOfErrors(InvalidCommandException exception) {
+        return List.of(exception.getMessage().split(ValidationResults.ERRORS_DELIMITER));
     }
 }

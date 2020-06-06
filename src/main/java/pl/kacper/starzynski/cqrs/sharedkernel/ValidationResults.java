@@ -2,9 +2,9 @@ package pl.kacper.starzynski.cqrs.sharedkernel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ValidationResults {
+    public static final String ERRORS_DELIMITER = System.lineSeparator();
     private final List<String> errors = new ArrayList<>();
 
     public void add(String errorMessage) {
@@ -22,6 +22,6 @@ public class ValidationResults {
     }
 
     private String getErrorsJoinedByNewLine() {
-        return errors.stream().collect(Collectors.joining(System.lineSeparator()));
+        return String.join(ERRORS_DELIMITER, errors);
     }
 }
