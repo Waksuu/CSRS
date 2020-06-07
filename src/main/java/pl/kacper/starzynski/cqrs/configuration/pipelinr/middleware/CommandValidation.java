@@ -12,8 +12,8 @@ import pl.kacper.starzynski.cqrs.sharedkernel.ValidationResults;
 public class CommandValidation implements Middleware {
     @Override
     public <R, C extends Command<R>> R invoke(C command, Next<R> next) {
-        ValidationResults errors = JsrValidator.validate(command);
-        errors.throwOnError();
+        ValidationResults validationResults = JsrValidator.validate(command);
+        validationResults.throwOnError();
         return next.invoke();
     }
 }
