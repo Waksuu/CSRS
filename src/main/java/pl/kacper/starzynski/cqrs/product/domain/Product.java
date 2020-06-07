@@ -3,10 +3,13 @@ package pl.kacper.starzynski.cqrs.product.domain;
 import java.math.BigDecimal;
 
 public class Product {
-    private final ProductId id;
-    private final Name name;
-    private final Price price;
-    private final ManufacturerEmail manufacturerEmail;
+    private ProductId id;
+    private Name name;
+    private Price price;
+    private ManufacturerEmail manufacturerEmail;
+
+    private Product() {
+    }
 
     private Product(ProductId id, Name name, Price price, ManufacturerEmail manufacturerEmail) {
         this.id = id;

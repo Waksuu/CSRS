@@ -1,7 +1,11 @@
 package pl.kacper.starzynski.cqrs.product.domain;
 
 class Name {
-    private final String name;
+    private String name;
+
+    private Name() {
+
+    }
 
     Name(String name) {
         this.name = name;

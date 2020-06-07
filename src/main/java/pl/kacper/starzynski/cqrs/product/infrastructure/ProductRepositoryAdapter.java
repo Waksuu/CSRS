@@ -7,7 +7,9 @@ import pl.kacper.starzynski.cqrs.product.domain.Product;
 import pl.kacper.starzynski.cqrs.product.domain.ProductId;
 import pl.kacper.starzynski.cqrs.product.domain.ProductRepository;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -20,5 +22,17 @@ public class ProductRepositoryAdapter implements ProductRepository {
         ProductDao productDao = mapper.map(product, ProductDao.class);
         UUID id = productHibernateRepository.save(productDao).getId();
         return new ProductId(id);
+    }
+
+    @Override
+    public Product load(ProductId productId) {
+        ProductDao productDao = productHibernateRepository.findById(productId.getId()).orElseThrow();
+        return mapper.map(productDao, Product.class);
+    }
+
+    @Override
+    public List<Product> loadAll() {
+        List<ProductDao> products = productHibernateRepository.findAll();
+        return products.stream().map(product -> mapper.map(product, Product.class)).collect(Collectors.toList());
     }
 }

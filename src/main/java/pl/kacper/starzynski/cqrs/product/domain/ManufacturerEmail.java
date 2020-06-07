@@ -1,7 +1,11 @@
 package pl.kacper.starzynski.cqrs.product.domain;
 
 class ManufacturerEmail {
-    private final String manufacturerEmail;
+    private String manufacturerEmail;
+
+    private ManufacturerEmail() {
+
+    }
 
     ManufacturerEmail(String manufacturerEmail) {
         this.manufacturerEmail = manufacturerEmail;

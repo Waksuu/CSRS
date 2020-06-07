@@ -7,7 +7,11 @@ import java.math.BigDecimal;
 import static pl.kacper.starzynski.cqrs.sharedkernel.ExceptionMessages.PRICE_IS_NOT_POSITIVE;
 
 class Price {
-    private final BigDecimal price;
+    private BigDecimal price;
+
+    private Price() {
+
+    }
 
     private Price(BigDecimal price) {
         this.price = price;
