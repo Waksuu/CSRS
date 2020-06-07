@@ -6,7 +6,9 @@ import org.junit.jupiter.api.function.Executable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.Mockito;
 import pl.kacper.starzynski.cqrs.configuration.pipelinr.middleware.CommandValidation;
+import pl.kacper.starzynski.cqrs.product.domain.ProductRepository;
 import pl.kacper.starzynski.cqrs.sharedkernel.ExceptionMessages;
 import pl.kacper.starzynski.cqrs.sharedkernel.InvalidCommandException;
 import pl.kacper.starzynski.cqrs.sharedkernel.ValidationResults;
@@ -45,7 +47,7 @@ class CreateProductHandlerTest {
     //TODO: This probably should be test only for command validation or end to end with spring boot context
     private static Pipelinr createPipelinrWithCreateProductHandler() {
         return new Pipelinr()
-                .with(() -> Stream.of(new CreateProductHandler()))
+                .with(() -> Stream.of(new CreateProductHandler(Mockito.mock(ProductRepository.class))))
                 .with(() -> Stream.of(new CommandValidation()));
     }
 

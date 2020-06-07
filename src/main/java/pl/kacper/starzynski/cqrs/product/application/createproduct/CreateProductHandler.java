@@ -3,12 +3,14 @@ package pl.kacper.starzynski.cqrs.product.application.createproduct;
 import an.awesome.pipelinr.Command.Handler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.kacper.starzynski.cqrs.product.domain.Product;
 import pl.kacper.starzynski.cqrs.product.domain.ProductId;
 import pl.kacper.starzynski.cqrs.product.domain.ProductRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CreateProductHandler implements Handler<CreateProductCommand, ProductId> {
 
     private final ProductRepository productRepository;

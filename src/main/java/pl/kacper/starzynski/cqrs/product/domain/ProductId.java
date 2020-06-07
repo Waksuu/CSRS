@@ -1,10 +1,17 @@
 package pl.kacper.starzynski.cqrs.product.domain;
 
-import lombok.Value;
+import lombok.Getter;
 
 import java.util.UUID;
 
-@Value
+@Getter
 public class ProductId {
-    UUID id = UUID.randomUUID();
+    private UUID id = UUID.randomUUID();
+
+    public ProductId() {
+    }
+
+    public ProductId(UUID id) {
+        this.id = id;
+    }
 }
