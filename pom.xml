@@ -63,6 +63,11 @@
             <artifactId>pipelinr</artifactId>
             <version>0.5</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.dozermapper</groupId>
+            <artifactId>dozer-spring-boot-starter</artifactId>
+            <version>6.5.0</version>
+        </dependency>
     </dependencies>
 
     <repositories>

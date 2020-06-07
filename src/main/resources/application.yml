@@ -12,4 +12,7 @@ spring:
       hibernate:
         format_sql: true
         hbm2ddl:
-          auto: create
+          auto: validate
+
+dozer:
+  mapping-files: classpath:dozer_mapping.xml

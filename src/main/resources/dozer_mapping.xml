@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mappings xmlns="http://dozermapper.github.io/schema/bean-mapping"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://dozermapper.github.io/schema/bean-mapping http://dozermapper.github.io/schema/bean-mapping.xsd">
+    <mapping>
+        <class-a is-accessible="true">pl.kacper.starzynski.cqrs.product.domain.Product</class-a>
+        <class-b is-accessible="true">pl.kacper.starzynski.cqrs.product.infrastructure.ProductDao</class-b>
+        <field>
+            <a>id.id</a>
+            <b>id</b>
+        </field>
+        <field>
+            <a>name.name</a>
+            <b>name</b>
+        </field>
+        <field>
+            <a>price.price</a>
+            <b>price</b>
+        </field>
+        <field>
+            <a>manufacturerEmail.manufacturerEmail</a>
+            <b>manufacturerEmail</b>
+        </field>
+    </mapping>
+</mappings>
