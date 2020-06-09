@@ -16,6 +16,7 @@ public class CreateProductCommand implements Command<ProductId> {
     @NotBlank(message = EMPTY_NAME)
     String name;
 
+    //TODO: Make custom jsr
     @NotNull(message = EMPTY_PRICE)
     @Positive(message = PRICE_IS_NOT_POSITIVE)
     BigDecimal price;
